@@ -11,6 +11,15 @@ var en = require('./en')
  * @param {string} [options.style.div] Inline style of badge wrapper
  * @param {string} [options.style.p] Inline style of badge text
  * @param {string} [options.language] Language text of badge
+ * @param {string} [options.disconnected] Set special style or
+ *                                        text for disconnected
+ * @param {string} [options.wait] Set special style or text for wait
+ * @param {string} [options.sending] Set special style or text for sending
+ * @param {string} [options.synchronized] Set special style
+ *                                        or text for synchronized
+ * @param {string} [options.refresh] Set special style or text for refresh
+ * @param {string} [options.error] Set special style or text for error
+ * @param {string} [options.timeout] Set timeout before hide notification
  *
  * @return {Function} Unbind show listener and hide badge.
  *
@@ -36,10 +45,11 @@ var positions = objFromItems([
   'bottomLeft',
   'bottomRight'
 ])
-var notificationTimeout = 300000 // TODO: change time on production
+var notificationTimeout = 3000 // TODO: change time on production
 
 function badge (client, options) {
-  options = Object.assign({ position: positions.topRight }, options)
+  options = Object.assign({ position: positions.bottomLeft }, options)
+  notificationTimeout = options.timeout || notificationTimeout
   var sync = client.sync
 
   var lastState
@@ -88,7 +98,9 @@ function badge (client, options) {
     if (timeoutId) {
       timeoutId = clearTimeout(timeoutId)
       // TODO: check if text not need change
-      setText(notification, type, options.language)
+      setStyle(notification,
+        (options[type] && options[type].style) || options.style)
+      setText(notification, type, options)
       // TODO: Change type and text showed popup
       timeoutId = setTimeout(hide, notificationTimeout)
     }
@@ -122,9 +134,9 @@ function createPopup (type, options) {
   var div = document.createElement('div')
   div.appendChild(document.createElement('p'))
   node.appendChild(div)
-  setStyle(node, options.style)
+  setStyle(node, (options[type] && options[type].style) || options.style)
   setPosition(node, options.position)
-  setText(node, type, options.language)
+  setText(node, type, options)
   return node
 }
 
@@ -195,16 +207,18 @@ function setPosition (node, position) {
   }
 }
 
-function setText (node, type, language) {
+function setText (node, type, options) {
   var p = node.querySelector('p')
-  switch (language && language.toLowerCase()) {
+  var text
+  switch (options.language && options.language.toLowerCase()) {
     case 'ru':
-      p.innerText = ru[type]
+      text = ru[type]
       break
     case 'en':
     default:
-      p.innerText = en[type]
+      text = en[type]
   }
+  p.innerText = (options[type] && options[type].text) || text
 }
 
 function objFromItems (array) {

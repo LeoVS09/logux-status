@@ -162,3 +162,75 @@ function disableLogux() {
   unbind()
 }
 ```
+
+
+## `badge`
+
+Show notifications when connection lost.
+
+```js
+var badge = require('logux-status/badge')
+badge(client)
+```
+
+It talk your users when Internet off or received server error.
+Also when connection restored badge display "Data saving", and when data will be synced "Data saved". If your receive protocol or sub-protocol error will be displayed "Refresh page". 
+
+In second argument you can define please where will be displayed notification.
+Possible values are: `top`, `topLeft`, `topRight`, `bottom`, `bottomLeft`, `bottomRight`.
+
+```js
+badge(client, { position: badge.positions.top })
+// or
+badge(client, { position: 'top' }) 
+```
+
+Notification have default styles, but you can change they.
+Notification have container and text blog, have names: `div`, `p`.
+
+```js
+badge(client, { style: {
+    div: { backgroundColor: 'white' },
+    p: { color: 'red' }
+}})
+```
+
+You can change language of notifications, possible values: `'ru'`, `'en'`.  
+
+```js
+badge(client, { language: 'ru' })
+```
+
+Also you can change text and style for special notifications.
+Notifications have names like states in Logux sync: `disconnected`, `wait`, `connecting`, `sending`, `synchronized`, `refresh`, `error`. 
+
+```js
+badge(client, { 
+    disconnected: {
+      style: { 
+          div: { fontSize: '2em' }
+      }
+    },
+    error: {
+      style: { 
+          p: { float: 'right' }
+      },
+      text: 'Something wrong.'
+    }
+})
+```
+
+You can define timeout notification in milliseconds.  
+
+```js
+badge(client, { timeout: 1000 })
+```
+
+It return a function to disable itself and hide notification.
+
+```js
+var unbind = badge(client)
+function disableLogux() {
+  unbind()
+}
+```

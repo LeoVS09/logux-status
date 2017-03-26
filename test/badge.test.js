@@ -203,3 +203,47 @@ it('should change language notification', function () {
       .toBe('Нет соединения.\n Ваши данные не сохранены.')
   })
 })
+
+it('should change style in special notification', function () {
+  return createTest().then(function (test) {
+    badge({ sync: test.leftSync }, {
+      disconnected: {
+        style: {
+          div: { color: 'red' },
+          p: { color: 'green' }
+        }
+      }
+    })
+
+    test.leftSync.setState('connecting')
+    test.leftSync.setState('disconnected')
+    expect(findBadgeNode().querySelector('div').style.color).toBe('red')
+    expect(findBadgeNode().querySelector('p').style.color).toBe('green')
+  })
+})
+
+it('should change text in special notification', function () {
+  return createTest().then(function (test) {
+    badge({ sync: test.leftSync }, {
+      disconnected: {
+        text: 'test'
+      }
+    })
+
+    test.leftSync.setState('connecting')
+    test.leftSync.setState('disconnected')
+    expect(findBadgeNode().querySelector('p').innerText).toBe('test')
+  })
+})
+
+it('should change timeout of notification', function () {
+  return createTest().then(function (test) {
+    badge({ sync: test.leftSync }, { timeout: 100 })
+
+    test.leftSync.setState('connecting')
+    test.leftSync.setState('disconnected')
+    setTimeout(function () {
+      expect(findBadgeNode()).toBeFalsy()
+    }, 200)
+  })
+})
