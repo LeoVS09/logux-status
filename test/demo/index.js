@@ -10,6 +10,7 @@ var attention = require('../../attention')
 var confirm = require('../../confirm')
 var favicon = require('../../favicon')
 var log = require('../../log')
+var badge = require('../../badge')
 
 var faviconNormal = require('./normal.png')
 var faviconOffline = require('./offline.png')
@@ -38,6 +39,7 @@ favicon(client, {
   error: faviconError
 })
 log(client)
+badge(client)
 
 client.sync.connection.connect()
 

@@ -9,3 +9,4 @@ coverage/
 docs/
 bundle/
 test/demo/build/
+.idea/
