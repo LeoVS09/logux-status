@@ -2,7 +2,7 @@ module.exports = {
 
   disconnected: 'No Internet connection.\n Your data has not been saved.',
 
-  wait: 'Your data as not been saved.',
+  wait: 'Your data has not been saved.',
 
   connecting: 'Data saving',
 
@@ -12,6 +12,6 @@ module.exports = {
 
   refresh: 'Saving is not working.\nRefresh the page.',
 
-  error: 'Server error.\nYour data as not been saved.'
+  error: 'Server error.\nYour data has not been saved.'
 
 }

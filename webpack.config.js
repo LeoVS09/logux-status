@@ -4,7 +4,11 @@ var webpack = require('webpack')
 module.exports = {
   module: {
     loaders: [
-      { test: /\.json$/, loader: 'json-loader' }
+      { test: /\.json$/, loader: 'json-loader' },
+      {
+        test: /\.svg$/,
+        use: ['svg-inline-loader']
+      }
     ]
   },
   plugins: [

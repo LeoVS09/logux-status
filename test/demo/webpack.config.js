@@ -11,7 +11,11 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.png$/, use: 'url-loader' }
+      { test: /\.png$/, use: 'url-loader' },
+      {
+        test: /\.svg$/,
+        use: ['svg-inline-loader']
+      }
     ]
   },
   plugins: [

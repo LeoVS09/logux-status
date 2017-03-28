@@ -1,6 +1,21 @@
 var ru = require('./ru')
 var en = require('./en')
-
+var _disconnected = require('./disconnected.svg')
+var _wait = require('./wait.svg')
+var _connecting = require('./connecting.svg')
+var _sending = require('./sending.svg')
+var _synchronized = require('./synchronized.svg')
+var _refresh = require('./refresh.svg')
+var _error = require('./error.svg')
+var icons = {
+  disconnected: _disconnected,
+  wait: _wait,
+  connecting: _connecting,
+  sending: _sending,
+  synchronized: _synchronized,
+  refresh: _refresh,
+  error: _error
+}
 /**
  * Show custom badge, when state changed.
  *
@@ -11,14 +26,15 @@ var en = require('./en')
  * @param {string} [options.style.div] Inline style of badge wrapper
  * @param {string} [options.style.p] Inline style of badge text
  * @param {string} [options.language] Language text of badge
- * @param {string} [options.disconnected] Set special style or
+ * @param {Object} [options.disconnected] Set special style or
  *                                        text for disconnected
- * @param {string} [options.wait] Set special style or text for wait
- * @param {string} [options.sending] Set special style or text for sending
- * @param {string} [options.synchronized] Set special style
+ * @param {string} [options.disconnected.icon] Set special icon
+ * @param {Object} [options.wait] Set special style or text for wait
+ * @param {Object} [options.sending] Set special style or text for sending
+ * @param {Object} [options.synchronized] Set special style
  *                                        or text for synchronized
- * @param {string} [options.refresh] Set special style or text for refresh
- * @param {string} [options.error] Set special style or text for error
+ * @param {Object} [options.refresh] Set special style or text for refresh
+ * @param {Object} [options.error] Set special style or text for error
  * @param {string} [options.timeout] Set timeout before hide notification
  *
  * @return {Function} Unbind show listener and hide badge.
@@ -45,10 +61,16 @@ var positions = objFromItems([
   'bottomLeft',
   'bottomRight'
 ])
-var notificationTimeout = 3000 // TODO: change time on production
-
+var notificationTimeout = 300000 // TODO: change time on production
 function badge (client, options) {
-  options = Object.assign({ position: positions.bottomLeft }, options)
+  options = Object.assign({
+    position: positions.bottomLeft,
+    error: {
+      style: {
+        div: { backgroundColor: '#E53935' }
+      }
+    }
+  }, options)
   notificationTimeout = options.timeout || notificationTimeout
   var sync = client.sync
 
@@ -98,6 +120,7 @@ function badge (client, options) {
     if (timeoutId) {
       timeoutId = clearTimeout(timeoutId)
       // TODO: check if text not need change
+      setIcon(notification, type, options)
       setStyle(notification,
         (options[type] && options[type].style) || options.style)
       setText(notification, type, options)
@@ -135,6 +158,7 @@ function createPopup (type, options) {
   div.appendChild(document.createElement('p'))
   node.appendChild(div)
   setStyle(node, (options[type] && options[type].style) || options.style)
+  setIcon(node, type, options)
   setPosition(node, options.position)
   setText(node, type, options)
   return node
@@ -161,7 +185,7 @@ function setStyle (node, definedStyle) {
   style = {
     color: '#cecece',
     padding: '0',
-    margin: 'auto',
+    margin: 'auto 0.2em auto 1em',
     fontSize: '1.1em',
     fontFamily: 'Roboto,sans-serif'
   }
@@ -169,6 +193,27 @@ function setStyle (node, definedStyle) {
     Object.assign(style, definedStyle.p)
   }
   Object.assign(node.querySelector('p').style, style)
+}
+
+function setIcon (node, type, options) {
+  var replace = document.createElement('div')
+  replace.innerHTML =
+    (options && options[type] && options[type].icon) ||
+    icons[type]
+  replace = replace.querySelector('svg')
+  var style = {
+    width: '2em',
+    marginLeft: '1em'
+  }
+  Object.assign(replace.style, style)
+
+  var div = node.querySelector('div')
+  var svg = div.querySelector('svg')
+  if (svg) {
+    div.replaceChild(replace, svg)
+  } else {
+    div.insertBefore(replace, div.firstChild)
+  }
 }
 
 function setPosition (node, position) {

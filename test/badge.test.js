@@ -247,3 +247,17 @@ it('should change timeout of notification', function () {
     }, 200)
   })
 })
+
+it('should change icon of special notification', function () {
+  return createTest().then(function (test) {
+    badge({ sync: test.leftSync }, {
+      disconnected: {
+        icon: '<svg class="test"> </svg>'
+      }
+    })
+
+    test.leftSync.setState('connecting')
+    test.leftSync.setState('disconnected')
+    expect(findBadgeNode().querySelector('svg').className).toBe('test')
+  })
+})
